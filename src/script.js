@@ -1,30 +1,45 @@
 const buttons = document.querySelectorAll('.calc button');
 const output = document.querySelector('.calc__output');
 
-function addClickEvent(element, fn) {
-    element.addEventListener('click', function () {
-        fn(this);
-    });
-}
-
-function btnEvent(fn) {
-    [...buttons].forEach(btn => {
-        addClickEvent(btn, fn);
-    });
-};
-
-btnEvent(btn => {
+elEvent(buttons, btn => {
     if (btn.innerHTML === 'c') {
-        clear();
+        clear(output);
         return;
     } else if (btn.innerHTML === '=') {
+        output.innerHTML = parseExpr(output.innerHTML);
         return;
     };
 
     output.innerHTML += btn.innerHTML;
 });
 
-function clear() {
-    output.innerHTML = '';
+
+function parseExpr(exp) {
+    let result = 0;
+    let currentActions = `+`;
+    let reg = /\d+|[\+\-\*\/\%]/g;
+    let match;
+
+    while (match = reg.exec(exp)) {
+        if (Number(match[0])) {
+            result = actions(currentActions, result, Number(match[0]));
+        } else {
+            currentActions = match[0];
+        }
+    }
+
+
+    return result;
 }
 
+function actions(curAct, acc, value) {
+    let act = {
+        '+': () => acc + value,
+        '-': () => acc - value,
+        '*': () => acc * value,
+        '/': () => acc / value,
+        '%': () => value / 100,
+    };
+
+    return act[curAct]();
+}
