@@ -40,7 +40,10 @@ html, body { height: 100%; }
     justify-content: flex-end;
 }
 
-.calc__clear,
+.calc__clear {
+    grid-column: 1/4;
+}
+
 .calc__zero {
     grid-column: 1/3;
 }

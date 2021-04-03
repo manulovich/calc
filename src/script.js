@@ -6,7 +6,7 @@ elEvent(buttons, btn => {
         clear(output);
         return;
     } else if (btn.innerHTML === '=') {
-        output.innerHTML = parseExpr(output.innerHTML);
+        output.innerHTML = parse(output.innerHTML);
         return;
     };
 
@@ -14,32 +14,19 @@ elEvent(buttons, btn => {
 });
 
 
-function parseExpr(exp) {
-    let result = 0;
-    let currentActions = `+`;
-    let reg = /\d+|[\+\-\*\/\%]/g;
-    let match;
+function parse(exp) {
+    let result = exp,
+        regForMatch = /(\d+)([\+\-\*\/])(\d+)/,
+        match;
 
-    while (match = reg.exec(exp)) {
-        if (Number(match[0])) {
-            result = actions(currentActions, result, Number(match[0]));
-        } else {
-            currentActions = match[0];
-        }
+    while (match = getMatch(result)) {
+        let [_, firstNum, act, lastNum] = regForMatch.exec(match[0]);
+
+        result =
+            result.slice(0, match.index) +
+            actions(firstNum, act, lastNum) +
+            result.slice(match.index + match[0].length);
     }
 
-
-    return result;
-}
-
-function actions(curAct, acc, value) {
-    let act = {
-        '+': () => acc + value,
-        '-': () => acc - value,
-        '*': () => acc * value,
-        '/': () => acc / value,
-        '%': () => value / 100,
-    };
-
-    return act[curAct]();
+    return Number(result);
 }
